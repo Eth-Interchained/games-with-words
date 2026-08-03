@@ -129,6 +129,7 @@ docs/        game rules, protocol, content policy, deploy, testing
 
 ## Documentation
 
+- [docs/SPEC.md](docs/SPEC.md) — the full specification, written to be argued with
 - [docs/GAME.md](docs/GAME.md) — the full rules and the design reasoning
 - [docs/PROTOCOL.md](docs/PROTOCOL.md) — every WebSocket message and the redaction contract
 - [docs/CONTENT.md](docs/CONTENT.md) — word pack curation rules and how to add a pack
@@ -141,10 +142,10 @@ docs/        game rules, protocol, content policy, deploy, testing
 npm test
 ```
 
-Runs the engine/server suite (50 checks, including a complete four-player game
+Runs the engine/server suite (53 checks, including a complete four-player game
 over real WebSockets with ready-up and identity-leak assertions) and the
 pass-and-play suite (13 checks, a complete three-round game driven through a
-real DOM). 63 total.
+real DOM). 66 total.
 
 ## License
 

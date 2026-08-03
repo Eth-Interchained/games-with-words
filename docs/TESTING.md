@@ -6,7 +6,7 @@ npm test
 
 Two suites, no test framework, no mocks of anything that matters.
 
-## Suite 1 — engine and server (`tests/run.ts`, 50 checks)
+## Suite 1 — engine and server (`tests/run.ts`, 53 checks)
 
 Runs on plain Node with `node:assert`.
 
@@ -18,6 +18,7 @@ Runs on plain Node with `node:assert`.
 | Filter | Ten innocent answers pass untouched; phone/email/address/threat/leetspeak all caught |
 | Scoring | Point maths, self-matches score nobody, heart ties award nobody, table-talk selection |
 | Redaction | Author ids, hands, seeds, and other players' guesses are all absent from a redacted view |
+| Join codes | The allocator never reissues a live code, widens under saturation, avoids O/0/I/1/S/5 |
 | Ready-up | Ready state broadcasts to every device, can be taken back, does not gate the launch, and clears on start |
 | **Live game** | A real server, four real WebSocket clients, a complete five-round game |
 

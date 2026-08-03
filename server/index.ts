@@ -44,6 +44,7 @@ import {
   advanceLineup,
 } from '../shared/engine.ts';
 import { filterAnswer, filterNickname } from '../shared/filter.ts';
+import { mulberry32, pickJoinCode } from '../shared/rng.ts';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT ?? 3210);
@@ -187,6 +188,11 @@ function handle(ws: WebSocket, msg: ClientMessage) {
 
     if (code === '' || code === 'NEW') {
       room = createRoom(crypto.randomInt(2 ** 31), now);
+      // never let a new room steal a live room's code
+      room.joinCode = pickJoinCode(
+        mulberry32(crypto.randomInt(2 ** 31)),
+        (c) => byJoinCode.has(c),
+      );
       rooms.set(room.id, room);
       byJoinCode.set(room.joinCode, room.id);
       log(1, `[room] created ${room.joinCode}`);

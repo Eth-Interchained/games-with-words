@@ -14,7 +14,7 @@ import type { AddressInfo } from 'node:net';
 
 import { CORE_PACK, PACKS, packFor } from '../shared/words.ts';
 import { FRAMES, questionFor } from '../shared/frames.ts';
-import { mulberry32, shuffle } from '../shared/rng.ts';
+import { mulberry32, pickJoinCode, shuffle } from '../shared/rng.ts';
 import { filterAnswer, filterNickname } from '../shared/filter.ts';
 import { pickTableTalk, scoreRound } from '../shared/scoring.ts';
 import {
@@ -157,6 +157,36 @@ async function dealTests() {
         assert.ok(!q.includes('undefined'), `${f.id} leaked undefined: ${q}`);
         assert.ok(!q.includes('{'), `${f.id} left a placeholder: ${q}`);
       }
+    }
+  });
+}
+
+async function joinCodeTests() {
+  section('Join codes');
+
+  await test('a taken code is never handed out again', () => {
+    const taken = new Set(['AAAA', 'BBBB']);
+    const rand = mulberry32(1234);
+    for (let i = 0; i < 500; i++) {
+      const code = pickJoinCode(rand, (c) => taken.has(c));
+      assert.ok(!taken.has(code), `handed out a taken code: ${code}`);
+      taken.add(code);
+    }
+    assert.equal(taken.size, 502, 'every code handed out should be distinct');
+  });
+
+  await test('widens the code rather than spinning when the space is full', () => {
+    // pathological predicate: every 4-character code is taken
+    const code = pickJoinCode(mulberry32(9), (c) => c.length <= 4);
+    assert.ok(code.length > 4, `expected a wider code, got "${code}"`);
+  });
+
+  await test('codes avoid characters that get misread out loud', () => {
+    const rand = mulberry32(77);
+    for (let i = 0; i < 300; i++) {
+      const code = pickJoinCode(rand, () => false);
+      assert.ok(!/[O0I1S5]/.test(code), `ambiguous character in ${code}`);
+      assert.match(code, /^[A-Z2-9]+$/);
     }
   });
 }
@@ -766,6 +796,7 @@ async function main() {
   console.log('\n\x1b[1m\x1b[38;5;208mGames with Words — test suite\x1b[0m');
   await packTests();
   await dealTests();
+  await joinCodeTests();
   await filterTests();
   await scoringTests();
   await redactionTests();
